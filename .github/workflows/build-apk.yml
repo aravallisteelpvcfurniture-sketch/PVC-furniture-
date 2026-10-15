@@ -21,38 +21,55 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      # AGP 9.1+ and Gradle 9.3+ require Java 21
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: 'gradle'
 
-      - name: Grant Execute Permission to Gradle Wrapper
-        run: chmod +x gradlew
+      - name: Setup Android SDK & Accept Licenses
+        uses: android-actions/setup-android@v3
 
-      - name: Restore Debug Keystore
+      - name: Accept Licenses & Install SDK 36
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-36" || true
+
+      - name: Prepare Environment & Secrets
+        run: |
+          chmod +x gradlew
+          if [ ! -f ".env" ] && [ -f ".env.example" ]; then
+            cp .env.example .env
+          fi
+
+      - name: Setup Debug Keystore
         run: |
           if [ -f "debug.keystore.base64" ]; then
-            base64 -d debug.keystore.base64 > debug.keystore
+            base64 -d debug.keystore.base64 > debug.keystore 2>/dev/null || base64 --decode debug.keystore.base64 > debug.keystore 2>/dev/null || true
+          fi
+          if [ ! -f "debug.keystore" ] || [ ! -s "debug.keystore" ]; then
+            echo "Generating new debug.keystore..."
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           fi
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Rename APK for Easy Install
+      - name: Organize APK Artifact
         run: |
           mkdir -p build-artifacts
-          cp app/build/outputs/apk/debug/app-debug.apk build-artifacts/AravalliFurniture-debug.apk
+          cp app/build/outputs/apk/debug/*.apk build-artifacts/AravalliFurniture-debug.apk
 
-      - name: Upload APK as Artifact (Direct Download for Android)
+      - name: Upload APK Artifact (Downloadable in Actions Tab)
         uses: actions/upload-artifact@v4
         with:
           name: Aravalli-Furniture-APK
           path: build-artifacts/AravalliFurniture-debug.apk
           retention-days: 30
 
-      - name: Create GitHub Release on Tag
+      - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
@@ -60,8 +77,8 @@ jobs:
           name: Aravalli Furniture Release ${{ github.ref_name }}
           body: |
             ## Aravalli Furniture Android App
-            Download and install the APK directly on your Android phone!
+            Download and install the APK directly on your Android phone:
             - **File**: `AravalliFurniture-debug.apk`
-            - **Platform**: Android 7.0+ (API 24+)
+            - **Requirements**: Android 7.0+ (API 24+)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
