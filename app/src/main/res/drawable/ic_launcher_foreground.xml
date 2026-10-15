@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylized armchair / royal sofa icon centered in the safe zone -->
+    <!-- Chair backrest -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,32 C38,30 40,28 42,28 L66,28 C68,28 70,30 70,32 L70,54 C70,55 69,56 68,56 L40,56 C39,56 38,55 38,54 Z" />
+    
+    <!-- Gold accent cushion lines -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M43,32 L47,32 L47,52 L43,52 Z M52,32 L56,32 L56,52 L52,52 Z M61,32 L65,32 L65,52 L61,52 Z" />
+
+    <!-- Left Armrest -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,44 C30,41 33,39 36,39 L38,39 L38,62 L35,62 C32,62 30,60 30,57 Z" />
+
+    <!-- Right Armrest -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,39 L72,39 C75,39 78,41 78,44 L78,57 C78,60 75,62 72,62 L70,62 Z" />
+
+    <!-- Base seat cushion -->
+    <path
+        android:fillColor="#ECEFF1"
+        android:pathData="M32,56 L76,56 C78,56 80,58 80,60 L80,65 C80,67 78,69 76,69 L32,69 C30,69 28,67 28,65 L28,60 C28,58 30,56 32,56 Z" />
+
+    <!-- Wooden legs -->
+    <!-- Front left leg -->
+    <path
+        android:fillColor="#FFE082"
+        android:pathData="M34,69 L37,69 L33,80 L29,80 Z" />
+
+    <!-- Front right leg -->
+    <path
+        android:fillColor="#FFE082"
+        android:pathData="M71,69 L74,69 L79,80 L75,80 Z" />
+
+    <!-- Back left leg -->
+    <path
+        android:fillColor="#FFCA28"
+        android:pathData="M42,69 L45,69 L43,77 L40,77 Z" />
+
+    <!-- Back right leg -->
+    <path
+        android:fillColor="#FFCA28"
+        android:pathData="M63,69 L66,69 L68,77 L65,77 Z" />
+
+    <!-- Stretcher bar -->
+    <path
+        android:fillColor="#FFCA28"
+        android:pathData="M32,75 L76,75 L76,77 L32,77 Z" />
+</vector>

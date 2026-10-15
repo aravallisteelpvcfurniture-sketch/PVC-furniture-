@@ -1,0 +1,67 @@
+name: Build & Release Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Aravalli Furniture APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Grant Execute Permission to Gradle Wrapper
+        run: chmod +x gradlew
+
+      - name: Restore Debug Keystore
+        run: |
+          if [ -f "debug.keystore.base64" ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          fi
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Rename APK for Easy Install
+        run: |
+          mkdir -p build-artifacts
+          cp app/build/outputs/apk/debug/app-debug.apk build-artifacts/AravalliFurniture-debug.apk
+
+      - name: Upload APK as Artifact (Direct Download for Android)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aravalli-Furniture-APK
+          path: build-artifacts/AravalliFurniture-debug.apk
+          retention-days: 30
+
+      - name: Create GitHub Release on Tag
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build-artifacts/AravalliFurniture-debug.apk
+          name: Aravalli Furniture Release ${{ github.ref_name }}
+          body: |
+            ## Aravalli Furniture Android App
+            Download and install the APK directly on your Android phone!
+            - **File**: `AravalliFurniture-debug.apk`
+            - **Platform**: Android 7.0+ (API 24+)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
